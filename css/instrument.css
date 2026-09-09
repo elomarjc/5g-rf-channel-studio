@@ -341,11 +341,94 @@ canvas {
     color: #ffffff;
 }
 
-@media (max-width: 1024px) {
+
+/* Touch & Mobile Optimization (Smartphones & Tablets) */
+@media (max-width: 960px) {
+    .top-nav {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 10px 14px;
+    }
+    .nav-links {
+        width: 100%;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    .nav-btn {
+        padding: 5px 10px;
+        font-size: 11px;
+    }
     .app-container {
         grid-template-columns: 1fr;
+        padding: 10px 12px;
+        gap: 12px;
     }
     .workspace-grid {
         grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    .hud-strip {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+    .hud-card {
+        padding: 10px 12px;
+    }
+    .hud-val {
+        font-size: 18px;
+    }
+    .panel-header {
+        padding: 10px 12px;
+    }
+    .panel-body {
+        padding: 12px;
+    }
+    input[type="range"] {
+        height: 28px;
+        touch-action: pan-y;
+    }
+    .btn {
+        padding: 12px 14px; /* Generous touch target */
+        font-size: 12px;
+    }
+    .preset-btn {
+        padding: 10px 12px;
+    }
+    .sweep-controls {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .sweep-controls .btn {
+        width: 100%;
     }
 }
+
+@media (max-width: 480px) {
+    .brand-title {
+        font-size: 15px;
+    }
+    .brand-model {
+        font-size: 10px;
+        padding: 1px 6px;
+    }
+    .hud-strip {
+        grid-template-columns: 1fr 1fr;
+    }
+    .hud-val {
+        font-size: 16px;
+    }
+    .canvas-container {
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+    canvas {
+        width: 100% !important;
+        height: auto !important;
+    }
+    .presets-grid {
+        grid-template-columns: 1fr;
+    }
+}
+

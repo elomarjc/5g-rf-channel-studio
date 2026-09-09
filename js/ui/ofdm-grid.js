@@ -77,6 +77,21 @@ export class OfdmGrid {
             this.render();
         });
 
+                // Touch support for mobile devices
+        this.canvas.addEventListener('touchstart', (e) => {
+            const touch = e.touches[0];
+            const rect = this.canvas.getBoundingClientRect();
+            const x = touch.clientX - rect.left - this.padLeft;
+            const y = touch.clientY - rect.top - this.padTop;
+            const col = Math.floor(x / this.cellW);
+            const row = Math.floor(y / this.cellH);
+            if (col >= 0 && col < this.numSymbols && row >= 0 && row < this.numSubcarriers) {
+                this.selectedCell = { row, col };
+                if (this.onSelect) this.onSelect(this.grid[row][col]);
+                this.render();
+            }
+        }, { passive: true });
+
         this.canvas.addEventListener('click', () => {
             if (this.hoveredCell) {
                 this.selectedCell = { ...this.hoveredCell };
