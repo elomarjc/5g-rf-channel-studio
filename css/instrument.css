@@ -432,3 +432,18 @@ canvas {
     }
 }
 
+
+
+/* 5G NR OFDM Resource Grid Responsive Sizing */
+#ofdm-canvas {
+    width: 100%;
+    height: 260px;
+    min-height: 250px;
+    display: block;
+}
+
+@media (max-width: 600px) {
+    #ofdm-canvas {
+        height: 255px;
+    }
+}
