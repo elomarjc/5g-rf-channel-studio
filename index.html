@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>5G/6G RF Physical-Layer Channel & Constellation Studio</title>
-    <link rel="stylesheet" href="css/instrument.css?v=4.0">
+    <link rel="stylesheet" href="css/instrument.css?v=5.0">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
@@ -647,15 +647,16 @@
         }
     })();
     </script>
-<!-- Interactive Guided Spotlight Tour Engine -->
-    <div class="tour-backdrop" id="tourBackdrop"></div>
+
+<!-- Interactive Guided Yellow Spotlight Tour Engine (Zero Blur) -->
     <div class="tour-card" id="tourCard">
         <div class="tour-badge-row">
             <span class="tour-step-badge" id="tourStepBadge">Step 1 of 4</span>
             <button class="tour-btn-skip" id="tourBtnSkip">✕ Skip Tour</button>
         </div>
         <h4 class="tour-action-title" id="tourTitle">Action Title</h4>
-        <div class="tour-why-box" id="tourWhy"><strong>Why:</strong> Reason</div>
+        <div class="tour-happens-box" id="tourHappens"><strong>⚡ What Happens:</strong> Live reaction</div>
+        <div class="tour-why-box" id="tourWhy"><strong>💡 Why:</strong> Reason</div>
         <div class="tour-footer">
             <div class="tour-dots" id="tourDots"></div>
             <div class="tour-controls">
@@ -674,32 +675,36 @@
     {
         "target": "#mod-select",
         "title": "\ud83d\udc49 Step 1: Select '64-QAM' or '256-QAM'",
-        "why": "Higher modulation orders pack constellation points closer together in the I/Q plane to achieve gigabit 5G speeds, but require higher SNR to prevent bit errors."
+        "happens": "Watch the I/Q constellation scope multiply from 4 points into a dense 64 or 256 Cartesian grid.",
+        "why": "Higher modulation orders pack more bits per symbol to achieve gigabit 5G speeds, but require higher SNR to prevent errors."
     },
     {
         "target": "#snr-slider",
         "title": "\ud83d\udc49 Step 2: Drag SNR Down to 15 dB",
-        "why": "Watch constellation points scatter on the phosphor CRT scope as noise increases and Error Vector Magnitude (EVM) climbs toward 3GPP conformance limits."
+        "happens": "Observe constellation points scatter into noisy clouds, EVM climb toward 8%, and BER bit errors rise on the chart.",
+        "why": "Simulates cell-edge RF degradation and verifies receiver demodulation against 3GPP TS 38.104 conformance limits."
     },
     {
         "target": "#fading-toggle",
         "title": "\ud83d\udc49 Step 3: Toggle 'Multipath Fading'",
-        "why": "Simulates signals bouncing off urban structures, causing deep Rayleigh fading dips and inter-symbol interference."
+        "happens": "Constellation points begin wandering and swirling as simulated reflections cause rapid Rayleigh fading signal dips.",
+        "why": "Recreates real urban multi-path propagation where buildings scatter wireless waves, introducing inter-symbol interference."
     },
     {
         "target": "#run-sweep-btn",
         "title": "\ud83d\udc49 Step 4: Click 'Run Conformance Sweep'",
-        "why": "Runs an automated Monte Carlo Bit Error Rate (BER) sweep, verifying physical-layer receiver performance against closed-form AWGN curves."
+        "happens": "The BER waterfall chart plots simulated Monte Carlo bit errors against theoretical AWGN curves in real time.",
+        "why": "Proves whether the digital receiver meets required 3GPP physical-layer performance standards."
     }
 ];
         const tourKey = 'tour_done_5g-rf-channel-studio';
         let currentStep = 0;
         let highlightedEl = null;
 
-        const backdrop = document.getElementById('tourBackdrop');
         const card = document.getElementById('tourCard');
         const badge = document.getElementById('tourStepBadge');
         const title = document.getElementById('tourTitle');
+        const happens = document.getElementById('tourHappens');
         const why = document.getElementById('tourWhy');
         const dotsContainer = document.getElementById('tourDots');
         const prevBtn = document.getElementById('tourBtnPrev');
@@ -708,7 +713,7 @@
         const launcherBtn = document.getElementById('btnTourLauncher');
         const guideBtn = document.getElementById('guideBtn');
 
-        if (!backdrop || !card) return;
+        if (!card) return;
 
         // Build step dots
         dotsContainer.innerHTML = '';
@@ -722,7 +727,7 @@
             if (window.innerWidth <= 640) {
                 if (targetEl) {
                     const rect = targetEl.getBoundingClientRect();
-                    // If target is in lower half of screen, dock card at top so control is unobstructed!
+                    // If target is in lower half of screen, dock card at top so control is 100% visible!
                     if (rect.top > window.innerHeight * 0.44) {
                         card.style.top = '12px';
                         card.style.bottom = 'auto';
@@ -752,8 +757,8 @@
             let top = rect.bottom + 14;
             let left = rect.left;
 
-            if (top + 210 > window.innerHeight && rect.top > 220) {
-                top = rect.top - 190;
+            if (top + 230 > window.innerHeight && rect.top > 240) {
+                top = rect.top - 210;
             }
             if (left + cardW > window.innerWidth) {
                 left = window.innerWidth - cardW - 20;
@@ -783,7 +788,8 @@
 
             badge.textContent = `Step ${index + 1} of ${steps.length}`;
             title.textContent = step.title;
-            why.innerHTML = `<strong>Why:</strong> ${step.why}`;
+            happens.innerHTML = `<strong>⚡ What Happens:</strong> ${step.happens}`;
+            why.innerHTML = `<strong>💡 Why:</strong> ${step.why}`;
 
             // Update dot indicators
             const dots = dotsContainer.querySelectorAll('.tour-dot');
@@ -797,12 +803,11 @@
                 highlightedEl = targetEl;
                 targetEl.classList.add('tour-spotlight-active');
                 targetEl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
-                setTimeout(() => positionCard(targetEl), 150);
+                setTimeout(() => positionCard(targetEl), 120);
             } else {
                 positionCard(null);
             }
 
-            backdrop.classList.add('active');
             card.classList.add('active');
         }
 
@@ -811,7 +816,6 @@
                 highlightedEl.classList.remove('tour-spotlight-active');
                 highlightedEl = null;
             }
-            backdrop.classList.remove('active');
             card.classList.remove('active');
             try {
                 sessionStorage.setItem(tourKey, '1');
@@ -841,8 +845,6 @@
             endTour();
         });
 
-        backdrop.addEventListener('click', endTour);
-
         if (launcherBtn) {
             launcherBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -857,7 +859,7 @@
             });
         }
 
-        // Auto-launch guided spotlight tour on first visit
+        // Auto-launch guided yellow tour on first visit
         window.addEventListener('load', () => {
             setTimeout(() => {
                 try {
