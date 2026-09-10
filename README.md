@@ -54,7 +54,9 @@ It was architected specifically to solve the active engineering needs outlined i
 ### 1. Constellation Energy Normalization
 To ensure fair Bit Error Rate comparisons across modulation orders, constellations are scaled by normalization constant $C_{\text{norm}}$ such that the average symbol energy $E_s = 1$:
 
-$$\mathcal{S}_{\text{norm}} = C_{\text{norm}} \cdot \{ I + j Q \}, \quad \mathbb{E}[|\mathcal{S}_{\text{norm}}|^2] = 1$$
+$$
+\mathcal{S}_{\text{norm}} = C_{\text{norm}} \cdot \{ I + j Q \}, \quad \mathbb{E}[\lvert \mathcal{S}_{\text{norm}} \rvert^2] = 1
+$$
 
 | Modulation Scheme | Bits/Symbol ($k$) | Unscaled Levels | Normalization Factor ($C_{\text{norm}}$) |
 | :--- | :---: | :---: | :---: |
@@ -67,28 +69,39 @@ $$\mathcal{S}_{\text{norm}} = C_{\text{norm}} \cdot \{ I + j Q \}, \quad \mathbb
 ### 2. Clarke's Isotropic Rayleigh & Rician Fading
 In non-line-of-sight (NLOS) conditions, received multi-path waves combine destructively and constructively according to Clarke's isotropic 2D scattering model:
 
-$$h_{\text{NLOS}}[n] = \frac{1}{\sqrt{2}} \left( X[n] + j Y[n] \right), \quad X, Y \sim \mathcal{N}(0, 1)$$
+$$
+h_{\text{NLOS}}[n] = \frac{1}{\sqrt{2}} \left( X[n] + j Y[n] \right), \quad X, Y \sim \mathcal{N}(0, 1)
+$$
 
 Under Rician fading (presence of a dominant specular Line-of-Sight component), the composite channel transfer coefficient is:
 
-$$h[n] = \sqrt{\frac{K}{K + 1}} + \sqrt{\frac{1}{K + 1}} h_{\text{NLOS}}[n]$$
+$$
+h[n] = \sqrt{\frac{K}{K + 1}} + \sqrt{\frac{1}{K + 1}} h_{\text{NLOS}}[n]
+$$
 
 where $K = 10^{K_{\text{dB}} / 10}$ is the Rician $K$-factor.
 
 ### 3. Doppler Frequency Rotation
 A mobile terminal moving at velocity $v$ relative to a carrier wavelength $\lambda = c / f_c$ experiences maximum Doppler shift $f_d = v / \lambda$. Over sampling interval $T_s$, the received signal acquires a continuous phase rotation:
 
-$$\theta[n] = \theta[n-1] + 2\pi f_d T_s$$
-$$r_{\text{Doppler}}[n] = s[n] \cdot e^{j \theta[n]}$$
+$$
+\theta[n] = \theta[n-1] + 2\pi f_d T_s
+$$
+
+$$
+r_{\text{Doppler}}[n] = s[n] \cdot e^{j \theta[n]}
+$$
 
 ### 4. 3GPP Error Vector Magnitude (EVM)
 The Error Vector Magnitude measures the root-mean-square displacement of received constellation coordinates $r[n]$ from ideal symbol locations $s_{\text{ideal}}[n]$:
 
-$$\text{EVM}_{\text{RMS}} = \sqrt{\frac{\frac{1}{N}\sum_{n=1}^N |r[n] - s_{\text{ideal}}[n]|^2}{\frac{1}{N}\sum_{n=1}^N |s_{\text{ideal}}[n]|^2}} \times 100\%$$
+$$
+\text{EVM}_{\text{RMS}} = \sqrt{\frac{\frac{1}{N}\sum_{n=1}^N \lvert r[n] - s_{\text{ideal}}[n] \rvert^2}{\frac{1}{N}\sum_{n=1}^N \lvert s_{\text{ideal}}[n] \rvert^2}} \times 100\%
+$$
 
-$$\text{MER}_{\text{dB}} = 10 \log_{10}\left( \frac{\sum |s_{\text{ideal}}|^2}{\sum |r - s_{\text{ideal}}|^2} \right) = -20 \log_{10}\left(\frac{\text{EVM}_{\text{RMS}}}{100}\right)$$
-
----
+$$
+\text{MER}_{\text{dB}} = 10 \log_{10}\left( \frac{\sum \lvert s_{\text{ideal}} \rvert^2}{\sum \lvert r - s_{\text{ideal}} \rvert^2} \right) = -20 \log_{10}\left(\frac{\text{EVM}_{\text{RMS}}}{100}\right)
+$$
 
 ## 📊 3GPP TS 38.104 Automated Conformance Matrix
 
@@ -96,10 +109,10 @@ The webapp automatically tests EVM against official **3GPP TS 38.104 Release 18*
 
 | Modulation Scheme | 3GPP TS 38.104 Max EVM | Testbench Conformance Logic |
 | :---: | :---: | :---: |
-| **QPSK** | **17.5%** | $\text{EVM}_{\text{RMS}} \le 17.5\% \implies \mathbf{PASS}$ |
-| **16-QAM** | **12.5%** | $\text{EVM}_{\text{RMS}} \le 12.5\% \implies \mathbf{PASS}$ |
-| **64-QAM** | **8.0%** | $\text{EVM}_{\text{RMS}} \le 8.0\% \implies \mathbf{PASS}$ |
-| **256-QAM** | **3.5%** | $\text{EVM}_{\text{RMS}} \le 3.5\% \implies \mathbf{PASS}$ |
+| **QPSK** | **17.5%** | $\text{EVM}_{\text{RMS}} \le 17.5\%$ → **PASS** |
+| **16-QAM** | **12.5%** | $\text{EVM}_{\text{RMS}} \le 12.5\%$ → **PASS** |
+| **64-QAM** | **8.0%** | $\text{EVM}_{\text{RMS}} \le 8.0\%$ → **PASS** |
+| **256-QAM** | **3.5%** | $\text{EVM}_{\text{RMS}} \le 3.5\%$ → **PASS** |
 
 ---
 
