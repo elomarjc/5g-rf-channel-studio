@@ -30,15 +30,16 @@
 <!-- Main Container -->
 <main class="app-container">
 <!-- Left Control Rack -->
-<aside class="control-rack mobile-drawer-pane"><div class="mobile-drawer-header" id="mobileDrawerHeader">
-<div class="drawer-title-group">
-<span style="font-size: 1.1rem;">🎛️</span>
-<span class="drawer-badge">5G RF CHANNEL CONTROLS</span>
+<div class="telemetry-backdrop" id="telemetry-backdrop"></div>
+<aside class="control-rack telemetry-drawer" id="telemetry-drawer">
+<div class="telemetry-drawer-header">
+  <div class="drawer-header-brand">
+    <span style="font-size: 1.1rem;">📶</span>
+    <span class="drawer-title">5G RF CHANNEL CONTROLS</span>
+  </div>
+  <button class="drawer-close-btn" id="btn-close-telemetry">✕ CLOSE</button>
 </div>
-<div class="drawer-toggle-btn" id="drawerToggleBtn">
-<span id="drawerToggleText">▲ OPEN CONTROLS</span>
-</div>
-</div><div class="mobile-drawer-body" id="mobileDrawerBody">
+<div class="telemetry-drawer-body" id="mobileDrawerBody">
 <!-- Digital Modulation -->
 <section class="panel">
 <div class="panel-header">
@@ -162,7 +163,7 @@
 <!-- Two Main Canvases -->
 <div class="workspace-grid">
 <!-- Constellation Panel -->
-<div class="panel">
+<div class="panel live-sticky-screen">
 <div class="panel-header">
 <span>I/Q Constellation Scope (VSA)</span>
 <div>
@@ -172,6 +173,171 @@
 <div class="panel-body">
 <div class="canvas-container">
 <canvas height="420" id="constellation-canvas" width="450"></canvas>
+  <!-- Floating 5G RF Studio HUD Overlay -->
+  <div class="hud-overlay-layer">
+    <!-- Top-Left HUD Controls -->
+    <div class="hud-top-left">
+      <!-- MOD Pill -->
+      <div class="hud-pill-box">
+        <div class="hud-pill-inner">
+          <svg class="hud-pill-icon" fill="none" height="13" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="13">
+            <rect height="14" rx="2" ry="2" width="20" x="2" y="3"></rect>
+            <line x1="8" x2="16" y1="21" y2="21"></line>
+            <line x1="12" x2="12" y1="17" y2="21"></line>
+          </svg>
+          <div class="hud-text-stack">
+            <span class="hud-mini-label">MODULATION</span>
+            <span class="hud-val-text" id="hud-mod-label">16-QAM (3GPP NR)</span>
+          </div>
+          <span class="hud-caret">▾</span>
+          <select class="hud-hidden-select" id="select-active-mod">
+            <option value="qpsk">QPSK (2 bits/sym)</option>
+            <option value="qam16" selected>16-QAM (4 bits/sym)</option>
+            <option value="qam64">64-QAM (6 bits/sym)</option>
+            <option value="qam256">256-QAM (8 bits/sym)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- CHANNEL Pill -->
+      <div class="hud-pill-box">
+        <div class="hud-pill-inner">
+          <svg class="hud-pill-icon" fill="none" height="13" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="13">
+            <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+          </svg>
+          <div class="hud-text-stack">
+            <span class="hud-mini-label">PROFILE</span>
+            <span class="hud-val-text" id="hud-profile-label">AWGN (CLEAR)</span>
+          </div>
+          <span class="hud-caret">▾</span>
+          <select class="hud-hidden-select" id="select-channel-profile">
+            <option value="awgn" selected>AWGN (CLEAR LINE-OF-SIGHT)</option>
+            <option value="rayleigh">RAYLEIGH MULTIPATH (EPA)</option>
+            <option value="rician">RICIAN RAYS (K = 10 dB)</option>
+            <option value="doppler">HIGH SPEED TRAIN (EVA 70Hz)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Quick Telemetry Tag Pill -->
+      <div class="hud-tags-row">
+        <div class="hud-tag-wrapper">
+          <button class="hud-tag-pill active" id="btn-quick-evm">
+            <span class="hud-dot-active">●</span>
+            <span id="hud-evm-tag">3GPP EVM: PASS</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top-Right Floating Actions Cluster (Menu, Settings, Fullscreen) -->
+    <div class="hud-top-right">
+      <button class="hud-circle-btn" id="btn-hud-menu" title="Engineering Whitepaper & Specifications">
+        <svg fill="none" height="16" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" width="16"><line x1="3" x2="21" y1="6" y2="6"></line><line x1="3" x2="21" y1="12" y2="12"></line><line x1="3" x2="21" y1="18" y2="18"></line></svg>
+      </button>
+      <button class="hud-circle-btn" id="btn-hud-settings" title="RF Impairments & Channel Drawer">
+        <svg fill="none" height="16" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" width="16"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+      </button>
+      <button class="hud-circle-btn" id="btn-hud-fullscreen" title="Toggle Fullscreen">
+        <svg fill="none" height="16" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" width="16"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>
+      </button>
+    </div>
+
+    <!-- Left Vertical SNR HUD Slider -->
+    <div class="hud-vertical-rail hud-left-rail">
+      <div class="hud-rail-top">
+        <svg fill="none" height="14" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="14"><path d="M5 12.55a11 11 0 0 1 14.08 0"></path><path d="M1.42 9a16 16 0 0 1 21.16 0"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" x2="12.01" y1="20" y2="20"></line></svg>
+        <span class="hud-rail-title">SNR (dB)</span>
+      </div>
+      <div class="hud-rail-track-container" id="snr-rail-container">
+        <div class="hud-rail-track">
+          <div class="hud-rail-fill" id="snr-rail-fill" style="height: 55%;"></div>
+          <div class="hud-rail-thumb" id="snr-rail-thumb" style="bottom: 55%;"></div>
+        </div>
+        <input class="hud-rail-range" id="slider-snr-vertical" max="40" min="0" step="1" type="range" value="22"/>
+      </div>
+      <div class="hud-rail-val-pill" id="val-snr-pill">22 dB</div>
+    </div>
+
+    <!-- Right Vertical DOPPLER HUD Slider -->
+    <div class="hud-vertical-rail hud-right-rail">
+      <div class="hud-rail-top">
+        <svg fill="none" height="14" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="14"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>
+        <span class="hud-rail-title">DOPPLER</span>
+      </div>
+      <div class="hud-rail-track-container" id="doppler-rail-container">
+        <div class="hud-rail-track">
+          <div class="hud-rail-fill" id="doppler-rail-fill" style="height: 0%;"></div>
+          <div class="hud-rail-thumb" id="doppler-rail-thumb" style="bottom: 0%;"></div>
+        </div>
+        <input class="hud-rail-range" id="slider-doppler-vertical" max="300" min="0" step="5" type="range" value="0"/>
+      </div>
+      <div class="hud-rail-val-pill is-live" id="val-doppler-pill">0 Hz</div>
+      <button class="hud-rail-pause-btn btn-pause-toggle" id="btn-rail-pause" title="Pause / Resume Simulation">
+        <span id="rail-pause-icon">⏸</span>
+      </button>
+    </div>
+
+    <!-- Bottom Area: Trigger Pill + Centered Transport + Modes Bar -->
+    <div class="hud-bottom-area">
+      <div class="hud-bottom-subrow">
+        <!-- Left Controls Drawer Trigger Pill -->
+        <button class="hud-aocs-trigger-pill" id="btn-trigger-controls-drawer">
+          <span class="aocs-trigger-icon">📶</span>
+          <div class="aocs-trigger-text">
+            <span class="aocs-trigger-title">5G RF RACK</span>
+            <span class="aocs-trigger-sub">CHANNEL EMULATOR</span>
+          </div>
+          <span class="aocs-trigger-chevron">›</span>
+        </button>
+
+        <!-- Center Transport Cluster -->
+        <div class="hud-sim-transport">
+          <button class="hud-transport-step" id="btn-transport-step-back" title="Step Back">‹</button>
+          <button class="hud-transport-pause btn-pause-toggle" id="btn-transport-pause">
+            <span id="hud-pause-icon">⏸</span>
+            <span id="hud-pause-label">PAUSE</span>
+          </button>
+          <button class="hud-transport-step" id="btn-transport-step-fwd" title="Step Forward">›</button>
+        </div>
+      </div>
+
+      <!-- Bottom Row: 4 Primary Operational Mode Cards -->
+      <div class="hud-flight-modes-bar">
+        <button class="hud-mode-card active" id="hud-mode-awgn">
+          <div class="mode-card-header">
+            <span class="mode-card-icon">⚡</span>
+            <span class="mode-card-title">AWGN CLEAR</span>
+          </div>
+          <span class="mode-card-sub">High SNR • 0 Fading</span>
+        </button>
+
+        <button class="hud-mode-card" id="hud-mode-rayleigh">
+          <div class="mode-card-header">
+            <span class="mode-card-icon">〰️</span>
+            <span class="mode-card-title">RAYLEIGH</span>
+          </div>
+          <span class="mode-card-sub">Multipath NLOS (EPA)</span>
+        </button>
+
+        <button class="hud-mode-card" id="hud-mode-high-doppler">
+          <div class="mode-card-header">
+            <span class="mode-card-icon">🚄</span>
+            <span class="mode-card-title">HIGH SPEED</span>
+          </div>
+          <span class="mode-card-sub">Doppler 150 Hz • Train</span>
+        </button>
+
+        <button class="hud-mode-card" id="hud-mode-sweep">
+          <div class="mode-card-header">
+            <span class="mode-card-icon">📈</span>
+            <span class="mode-card-title">RUN SWEEP</span>
+          </div>
+          <span class="mode-card-sub">Automated BER Curve</span>
+        </button>
+      </div>
+    </div>
+  </div>
 </div>
 <div id="compliance-text" style="margin-top: 10px; font-size: 11px; color: var(--text-muted);">
                             3GPP TS 38.104 Conformance Check
@@ -491,5 +657,22 @@
   }
 })();
 </script>
+<!-- Help & Technical Whitepaper Modal -->
+<div class="modal-overlay" id="help-modal" style="display: none;">
+  <div class="modal-card">
+    <div class="modal-header">
+      <span>5G NR Physical Layer RF Studio — Engineering Whitepaper</span>
+      <button class="btn-action" id="btn-close-modal" style="padding: 2px 8px;">✕</button>
+    </div>
+    <div class="modal-body">
+      <h4>1. 5G NR Numerology &amp; Constellation Mapping</h4>
+      <p>Simulates 3GPP Release 16/17 physical downlink shared channel (PDSCH) modulation mappings: QPSK, 16-QAM, 64-QAM, and 256-QAM with Gray constellation bit labeling.</p>
+      <h4>2. Multipath Fading &amp; Statistical Channel Profiles</h4>
+      <p>Emulates tapped-delay-line mobile channels with classical Clarke/Jakes Doppler spectra: Rayleigh (non-line-of-sight urban multipath) and Rician (line-of-sight specular path with configurable K-factor).</p>
+      <h4>3. RF Front-End Impairments &amp; 3GPP TS 38.104 EVM Conformance</h4>
+      <p>Models analog hardware non-idealities: Phase noise (Wiener random walk process), I/Q gain imbalance (&plusmn;3 dB), quadrature phase skew (&plusmn;15&deg;), and DC carrier leakage. Computes RMS Error Vector Magnitude (EVM) evaluated strictly against 3GPP conformance thresholds (QPSK &le; 17.5%, 16-QAM &le; 12.5%, 64-QAM &le; 8.0%, 256-QAM &le; 3.5%).</p>
+    </div>
+  </div>
+</div>
 </body>
 </html>
