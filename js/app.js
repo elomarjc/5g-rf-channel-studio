@@ -38,6 +38,7 @@ class RFStudioApp {
         this.initDOM();
         this.initInstruments();
         this.initEventListeners();
+        this.setupFloatingHUD();
         this.startStream();
     }
 
@@ -292,4 +293,223 @@ class RFStudioApp {
 
 document.addEventListener('DOMContentLoaded', () => {
     window.app = new RFStudioApp();
+
+    setupFloatingHUD() {
+        // 1. Drawer open/close
+        const drawer = document.getElementById('telemetry-drawer');
+        const backdrop = document.getElementById('telemetry-backdrop');
+        const openDrawer = () => {
+            drawer?.classList.add('open');
+            backdrop?.classList.add('active');
+        };
+        const closeDrawer = () => {
+            drawer?.classList.remove('open');
+            backdrop?.classList.remove('active');
+        };
+
+        document.getElementById('btn-hud-settings')?.addEventListener('click', openDrawer);
+        document.getElementById('btn-close-telemetry')?.addEventListener('click', closeDrawer);
+        backdrop?.addEventListener('click', closeDrawer);
+
+        // 2. Fullscreen Toggle
+        const fsBtn = document.getElementById('btn-hud-fullscreen');
+        fsBtn?.addEventListener('click', () => {
+            if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+                if (document.documentElement.requestFullscreen) {
+                    document.documentElement.requestFullscreen().catch(() => {
+                        document.body.classList.toggle('immersive-fullscreen');
+                    });
+                } else if (document.documentElement.webkitRequestFullscreen) {
+                    document.documentElement.webkitRequestFullscreen();
+                } else {
+                    document.body.classList.toggle('immersive-fullscreen');
+                }
+            } else {
+                if (document.exitFullscreen) document.exitFullscreen().catch(() => {});
+                else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+                document.body.classList.remove('immersive-fullscreen');
+            }
+        });
+
+        // 3. Pause Simulation Toggle
+        let isPaused = false;
+        const transPause = document.getElementById('btn-transport-pause');
+        const railPause = document.getElementById('btn-rail-pause');
+        const hudPauseIcon = document.getElementById('hud-pause-icon');
+        const hudPauseLabel = document.getElementById('hud-pause-label');
+        const railPauseIcon = document.getElementById('rail-pause-icon');
+
+        const togglePause = () => {
+            isPaused = !isPaused;
+            const icon = isPaused ? '▶' : '⏸';
+            const label = isPaused ? 'RESUME' : 'PAUSE';
+            if (hudPauseIcon) hudPauseIcon.textContent = icon;
+            if (hudPauseLabel) hudPauseLabel.textContent = label;
+            if (railPauseIcon) railPauseIcon.textContent = icon;
+            transPause?.classList.toggle('is-paused', isPaused);
+            if (isPaused) {
+                if (this.animationId) cancelAnimationFrame(this.animationId);
+            } else {
+                this.startStream();
+            }
+        };
+
+        transPause?.addEventListener('click', togglePause);
+        railPause?.addEventListener('click', togglePause);
+
+        // 4. Modulation Selector
+        const selectMod = document.getElementById('select-active-mod');
+        const lblMod = document.getElementById('hud-mod-label');
+        selectMod?.addEventListener('change', (e) => {
+            const val = e.target.value;
+            if (this.dom.modSelect) {
+                this.dom.modSelect.value = val;
+                this.dom.modSelect.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+            if (lblMod) lblMod.textContent = selectMod.options[selectMod.selectedIndex].text.split(' ')[0];
+        });
+
+        // 5. Mode Cards
+        const cardAwgn = document.getElementById('hud-mode-awgn');
+        const cardRayleigh = document.getElementById('hud-mode-rayleigh');
+        const cardDoppler = document.getElementById('hud-mode-high-doppler');
+        const cardSweep = document.getElementById('hud-mode-sweep');
+
+        const setCardActive = (activeCard) => {
+            [cardAwgn, cardRayleigh, cardDoppler].forEach(c => c?.classList.remove('active'));
+            activeCard?.classList.add('active');
+        };
+
+        cardAwgn?.addEventListener('click', () => {
+            setCardActive(cardAwgn);
+            this.channelParams.snrDb = 28.0;
+            this.channelParams.enableFading = false;
+            this.channelParams.dopplerHz = 0.0;
+            if (this.dom.snrSlider) this.dom.snrSlider.value = 28;
+            if (this.dom.fadingToggle) this.dom.fadingToggle.checked = false;
+            if (this.dom.dopplerSlider) this.dom.dopplerSlider.value = 0;
+            updateSnr(28);
+            updateDoppler(0);
+        });
+
+        cardRayleigh?.addEventListener('click', () => {
+            setCardActive(cardRayleigh);
+            this.channelParams.snrDb = 18.0;
+            this.channelParams.enableFading = true;
+            this.channelParams.ricianKDb = -100.0;
+            this.channelParams.dopplerHz = 30.0;
+            if (this.dom.snrSlider) this.dom.snrSlider.value = 18;
+            if (this.dom.fadingToggle) this.dom.fadingToggle.checked = true;
+            if (this.dom.dopplerSlider) this.dom.dopplerSlider.value = 30;
+            updateSnr(18);
+            updateDoppler(30);
+        });
+
+        cardDoppler?.addEventListener('click', () => {
+            setCardActive(cardDoppler);
+            this.channelParams.snrDb = 20.0;
+            this.channelParams.enableFading = true;
+            this.channelParams.dopplerHz = 150.0;
+            if (this.dom.snrSlider) this.dom.snrSlider.value = 20;
+            if (this.dom.fadingToggle) this.dom.fadingToggle.checked = true;
+            if (this.dom.dopplerSlider) this.dom.dopplerSlider.value = 150;
+            updateSnr(20);
+            updateDoppler(150);
+        });
+
+        cardSweep?.addEventListener('click', () => {
+            this.dom.runSweepBtn?.click();
+            cardSweep.classList.add('active');
+            setTimeout(() => cardSweep.classList.remove('active'), 2500);
+        });
+
+        // 6. SNR Rail (0 to 40 dB)
+        const snrContainer = document.getElementById('snr-rail-container');
+        const snrInput = document.getElementById('slider-snr-vertical');
+        const snrFill = document.getElementById('snr-rail-fill');
+        const snrThumb = document.getElementById('snr-rail-thumb');
+        const snrPill = document.getElementById('val-snr-pill');
+
+        const updateSnr = (val) => {
+            const num = Math.max(0, Math.min(40, Math.round(val)));
+            this.channelParams.snrDb = num;
+            if (this.dom.snrSlider) this.dom.snrSlider.value = num;
+            if (this.dom.snrVal) this.dom.snrVal.textContent = `${num} dB`;
+            if (snrInput) snrInput.value = num;
+            if (snrPill) snrPill.textContent = `${num} dB`;
+            const pct = (num / 40) * 100;
+            if (snrFill) snrFill.style.height = `${pct}%`;
+            if (snrThumb) snrThumb.style.bottom = `${pct}%`;
+        };
+
+        snrInput?.addEventListener('input', (e) => updateSnr(parseFloat(e.target.value)));
+
+        let dragSnr = false;
+        const handleSnrPointer = (e) => {
+            const rect = snrContainer.getBoundingClientRect();
+            const frac = Math.max(0, Math.min(1, (rect.bottom - e.clientY) / rect.height));
+            updateSnr(frac * 40);
+        };
+        snrContainer?.addEventListener('pointerdown', (e) => {
+            dragSnr = true;
+            snrContainer.setPointerCapture?.(e.pointerId);
+            handleSnrPointer(e);
+        });
+        snrContainer?.addEventListener('pointermove', (e) => {
+            if (dragSnr) handleSnrPointer(e);
+        });
+        const stopSnrDrag = (e) => {
+            if (dragSnr) {
+                dragSnr = false;
+                try { snrContainer.releasePointerCapture?.(e.pointerId); } catch (_) {}
+            }
+        };
+        snrContainer?.addEventListener('pointerup', stopSnrDrag);
+        snrContainer?.addEventListener('pointercancel', stopSnrDrag);
+
+        // 7. Doppler Rail (0 to 300 Hz)
+        const dopplerContainer = document.getElementById('doppler-rail-container');
+        const dopplerInput = document.getElementById('slider-doppler-vertical');
+        const dopplerFill = document.getElementById('doppler-rail-fill');
+        const dopplerThumb = document.getElementById('doppler-rail-thumb');
+        const dopplerPill = document.getElementById('val-doppler-pill');
+
+        const updateDoppler = (val) => {
+            const num = Math.max(0, Math.min(300, Math.round(val)));
+            this.channelParams.dopplerHz = num;
+            if (this.dom.dopplerSlider) this.dom.dopplerSlider.value = num;
+            if (this.dom.dopplerVal) this.dom.dopplerVal.textContent = `${num} Hz`;
+            if (dopplerInput) dopplerInput.value = num;
+            if (dopplerPill) dopplerPill.textContent = `${num} Hz`;
+            const pct = (num / 300) * 100;
+            if (dopplerFill) dopplerFill.style.height = `${pct}%`;
+            if (dopplerThumb) dopplerThumb.style.bottom = `${pct}%`;
+        };
+
+        dopplerInput?.addEventListener('input', (e) => updateDoppler(parseFloat(e.target.value)));
+
+        let dragDoppler = false;
+        const handleDopplerPointer = (e) => {
+            const rect = dopplerContainer.getBoundingClientRect();
+            const frac = Math.max(0, Math.min(1, (rect.bottom - e.clientY) / rect.height));
+            updateDoppler(frac * 300);
+        };
+        dopplerContainer?.addEventListener('pointerdown', (e) => {
+            dragDoppler = true;
+            dopplerContainer.setPointerCapture?.(e.pointerId);
+            handleDopplerPointer(e);
+        });
+        dopplerContainer?.addEventListener('pointermove', (e) => {
+            if (dragDoppler) handleDopplerPointer(e);
+        });
+        const stopDopplerDrag = (e) => {
+            if (dragDoppler) {
+                dragDoppler = false;
+                try { dopplerContainer.releasePointerCapture?.(e.pointerId); } catch (_) {}
+            }
+        };
+        dopplerContainer?.addEventListener('pointerup', stopDopplerDrag);
+        dopplerContainer?.addEventListener('pointercancel', stopDopplerDrag);
+    }
+
 });
