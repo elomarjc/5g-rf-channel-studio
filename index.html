@@ -1,248 +1,224 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>5G/6G RF Physical-Layer Channel & Constellation Studio</title>
-    <link rel="stylesheet" href="css/instrument.css?v=5.0">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>5G/6G RF Physical-Layer Channel &amp; Constellation Studio</title>
+<link href="css/instrument.css?v=8.0" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
 </head>
 <body>
-    <!-- Top Navigation -->
-    <header class="top-nav">
-        <div class="brand">
-            <span class="brand-icon">📡</span>
-            <div>
-                <div class="brand-title">5G/6G RF Channel & Constellation Studio</div>
-                <div class="brand-model">Precision Vector Signal Analyzer (VSA) • Physical-Layer Emulation Suite</div>
-            </div>
-        </div>
-        <div class="nav-links">
-            <button id="guideBtn" class="btn-guide">🎮 Guided Tour</button>
-            <span style="font-size: 12px; color: var(--text-muted);">Aalborg University (AAU) R&D Showcase</span>
-            <a href="https://github.com/elomarjc/5g-rf-channel-studio" target="_blank" class="nav-btn">GitHub Source</a>
-            <a href="https://www.linkedin.com/in/jacob-el-omar/" target="_blank" class="nav-btn">Jacob El-Omar</a>
-        </div>
-    </header>
-
-    <!-- Main Container -->
-    <main class="app-container">
-        <!-- Left Control Rack -->
-        <aside class="control-rack">
-            <!-- Digital Modulation -->
-            <section class="panel">
-                <div class="panel-header">
-                    <span>1. Modulation & Waveform</span>
-                </div>
-                <div class="panel-body">
-                    <div class="control-group">
-                        <div class="control-label">
-                            <span>Modulation Scheme</span>
-                        </div>
-                        <select id="mod-select">
-                            <option value="BPSK">BPSK (1 bit/sym)</option>
-                            <option value="QPSK">QPSK / 4-QAM (2 bits/sym)</option>
-                            <option value="16-QAM" selected>16-QAM (4 bits/sym - 5G NR)</option>
-                            <option value="64-QAM">64-QAM (6 bits/sym - 5G NR)</option>
-                            <option value="256-QAM">256-QAM (8 bits/sym - 5G DL High-Speed)</option>
-                        </select>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Channel Impairments -->
-            <section class="panel">
-                <div class="panel-header">
-                    <span>2. 3GPP RF Channel Impairments</span>
-                </div>
-                <div class="panel-body">
-                    <!-- AWGN -->
-                    <div class="control-group">
-                        <div class="control-label">
-                            <span>AWGN SNR (dB)</span>
-                            <span id="snr-val">22.0 dB</span>
-                        </div>
-                        <input type="range" id="snr-slider" min="0" max="35" step="0.5" value="22">
-                    </div>
-
-                    <!-- Fading Toggle & Rician K -->
-                    <div class="control-group">
-                        <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer; margin-bottom: 8px;">
-                            <input type="checkbox" id="fading-toggle">
-                            <strong>Enable Multipath Fading (Rayleigh / Rician)</strong>
-                        </label>
-                        <div id="fading-controls" style="opacity: 0.4; transition: opacity 0.2s;">
-                            <div class="control-label">
-                                <span>Rician K-Factor (LOS Ratio)</span>
-                                <span id="rician-val">10.0 dB</span>
-                            </div>
-                            <input type="range" id="rician-slider" min="-30" max="15" step="1" value="10">
-                        </div>
-                    </div>
-
-                    <!-- Doppler Frequency Shift -->
-                    <div class="control-group">
-                        <div class="control-label">
-                            <span>Doppler Shift (Speed)</span>
-                            <span id="doppler-val">0 Hz (0 km/h)</span>
-                        </div>
-                        <input type="range" id="doppler-slider" min="0" max="1000" step="10" value="0">
-                    </div>
-
-                    <!-- Phase Noise -->
-                    <div class="control-group">
-                        <div class="control-label">
-                            <span>LO Phase Noise Jitter</span>
-                            <span id="phase-noise-val">0.00°</span>
-                        </div>
-                        <input type="range" id="phase-noise-slider" min="0" max="8" step="0.1" value="0">
-                    </div>
-
-                    <!-- IQ Imbalance -->
-                    <div class="control-group">
-                        <div class="control-label">
-                            <span>Mixer IQ Gain Imbalance</span>
-                            <span id="iq-gain-val">0.00 dB</span>
-                        </div>
-                        <input type="range" id="iq-gain-slider" min="-3" max="3" step="0.1" value="0">
-                    </div>
-
-                    <div class="control-group">
-                        <div class="control-label">
-                            <span>Mixer Quadrature Skew</span>
-                            <span id="iq-phase-val">0.00°</span>
-                        </div>
-                        <input type="range" id="iq-phase-slider" min="-10" max="10" step="0.5" value="0">
-                    </div>
-
-                    <!-- Scope Persistence -->
-                    <div class="control-group">
-                        <div class="control-label">
-                            <span>Phosphor Persistence Decay</span>
-                            <span id="persistence-val">25%</span>
-                        </div>
-                        <input type="range" id="persistence-slider" min="0.05" max="0.9" step="0.05" value="0.25">
-                    </div>
-                </div>
-            </section>
-
-            <!-- Test Presets -->
-            <section class="panel">
-                <div class="panel-header">
-                    <span>3. Industry Test Scenarios</span>
-                </div>
-                <div class="panel-body">
-                    <div class="presets-grid" id="presets-container"></div>
-                </div>
-            </section>
-        </aside>
-
-        <!-- Right Visual Workspace -->
-        <section class="workspace">
-            <!-- Telemetry HUD -->
-            <div class="hud-strip">
-                <div class="hud-card">
-                    <div class="hud-label">EVM (RMS)</div>
-                    <div class="hud-val cyan" id="evm-rms-gauge">-- %</div>
-                </div>
-                <div class="hud-card">
-                    <div class="hud-label">EVM (Peak)</div>
-                    <div class="hud-val amber" id="evm-peak-gauge">-- %</div>
-                </div>
-                <div class="hud-card">
-                    <div class="hud-label">Modulation Error Ratio (MER)</div>
-                    <div class="hud-val" id="mer-gauge">-- dB</div>
-                </div>
-                <div class="hud-card">
-                    <div class="hud-label">Bit Error Rate (BER)</div>
-                    <div class="hud-val" id="ber-gauge">0.00e+0</div>
-                </div>
-            </div>
-
-            <!-- Two Main Canvases -->
-            <div class="workspace-grid">
-                <!-- Constellation Panel -->
-                <div class="panel">
-                    <div class="panel-header">
-                        <span>I/Q Constellation Scope (VSA)</span>
-                        <div>
-                            <span class="badge badge-pass" id="pass-fail-badge">3GPP PASS</span>
-                        </div>
-                    </div>
-                    <div class="panel-body">
-                        <div class="canvas-container">
-                            <canvas id="constellation-canvas" width="450" height="420"></canvas>
-                        </div>
-                        <div style="margin-top: 10px; font-size: 11px; color: var(--text-muted);" id="compliance-text">
+<!-- Top Navigation -->
+<header class="top-nav">
+<div class="brand">
+<span class="brand-icon">📡</span>
+<div>
+<div class="brand-title">5G/6G RF Channel &amp; Constellation Studio</div>
+<div class="brand-model">Precision Vector Signal Analyzer (VSA) • Physical-Layer Emulation Suite</div>
+</div>
+</div>
+<div class="nav-links">
+<button class="btn-guide" id="guideBtn">🎮 Guided Tour</button>
+<span style="font-size: 12px; color: var(--text-muted);">Aalborg University (AAU) R&amp;D Showcase</span>
+<a class="nav-btn" href="https://github.com/elomarjc/5g-rf-channel-studio" target="_blank">GitHub Source</a>
+<a class="nav-btn" href="https://www.linkedin.com/in/jacob-el-omar/" target="_blank">Jacob El-Omar</a>
+</div>
+</header>
+<!-- Main Container -->
+<main class="app-container">
+<!-- Left Control Rack -->
+<aside class="control-rack">
+<!-- Digital Modulation -->
+<section class="panel">
+<div class="panel-header">
+<span>1. Modulation &amp; Waveform</span>
+</div>
+<div class="panel-body">
+<div class="control-group">
+<div class="control-label">
+<span>Modulation Scheme</span>
+</div>
+<select id="mod-select">
+<option value="BPSK">BPSK (1 bit/sym)</option>
+<option value="QPSK">QPSK / 4-QAM (2 bits/sym)</option>
+<option selected="" value="16-QAM">16-QAM (4 bits/sym - 5G NR)</option>
+<option value="64-QAM">64-QAM (6 bits/sym - 5G NR)</option>
+<option value="256-QAM">256-QAM (8 bits/sym - 5G DL High-Speed)</option>
+</select>
+</div>
+</div>
+</section>
+<!-- Channel Impairments -->
+<section class="panel">
+<div class="panel-header">
+<span>2. 3GPP RF Channel Impairments</span>
+</div>
+<div class="panel-body">
+<!-- AWGN -->
+<div class="control-group">
+<div class="control-label">
+<span>AWGN SNR (dB)</span>
+<span id="snr-val">22.0 dB</span>
+</div>
+<input id="snr-slider" max="35" min="0" step="0.5" type="range" value="22"/>
+</div>
+<!-- Fading Toggle & Rician K -->
+<div class="control-group">
+<label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer; margin-bottom: 8px;">
+<input id="fading-toggle" type="checkbox"/>
+<strong>Enable Multipath Fading (Rayleigh / Rician)</strong>
+</label>
+<div id="fading-controls" style="opacity: 0.4; transition: opacity 0.2s;">
+<div class="control-label">
+<span>Rician K-Factor (LOS Ratio)</span>
+<span id="rician-val">10.0 dB</span>
+</div>
+<input id="rician-slider" max="15" min="-30" step="1" type="range" value="10"/>
+</div>
+</div>
+<!-- Doppler Frequency Shift -->
+<div class="control-group">
+<div class="control-label">
+<span>Doppler Shift (Speed)</span>
+<span id="doppler-val">0 Hz (0 km/h)</span>
+</div>
+<input id="doppler-slider" max="1000" min="0" step="10" type="range" value="0"/>
+</div>
+<!-- Phase Noise -->
+<div class="control-group">
+<div class="control-label">
+<span>LO Phase Noise Jitter</span>
+<span id="phase-noise-val">0.00°</span>
+</div>
+<input id="phase-noise-slider" max="8" min="0" step="0.1" type="range" value="0"/>
+</div>
+<!-- IQ Imbalance -->
+<div class="control-group">
+<div class="control-label">
+<span>Mixer IQ Gain Imbalance</span>
+<span id="iq-gain-val">0.00 dB</span>
+</div>
+<input id="iq-gain-slider" max="3" min="-3" step="0.1" type="range" value="0"/>
+</div>
+<div class="control-group">
+<div class="control-label">
+<span>Mixer Quadrature Skew</span>
+<span id="iq-phase-val">0.00°</span>
+</div>
+<input id="iq-phase-slider" max="10" min="-10" step="0.5" type="range" value="0"/>
+</div>
+<!-- Scope Persistence -->
+<div class="control-group">
+<div class="control-label">
+<span>Phosphor Persistence Decay</span>
+<span id="persistence-val">25%</span>
+</div>
+<input id="persistence-slider" max="0.9" min="0.05" step="0.05" type="range" value="0.25"/>
+</div>
+</div>
+</section>
+<!-- Test Presets -->
+<section class="panel">
+<div class="panel-header">
+<span>3. Industry Test Scenarios</span>
+</div>
+<div class="panel-body">
+<div class="presets-grid" id="presets-container"></div>
+</div>
+</section>
+</aside>
+<!-- Right Visual Workspace -->
+<section class="workspace">
+<!-- Telemetry HUD -->
+<div class="hud-strip">
+<div class="hud-card">
+<div class="hud-label">EVM (RMS)</div>
+<div class="hud-val cyan" id="evm-rms-gauge">-- %</div>
+</div>
+<div class="hud-card">
+<div class="hud-label">EVM (Peak)</div>
+<div class="hud-val amber" id="evm-peak-gauge">-- %</div>
+</div>
+<div class="hud-card">
+<div class="hud-label">Modulation Error Ratio (MER)</div>
+<div class="hud-val" id="mer-gauge">-- dB</div>
+</div>
+<div class="hud-card">
+<div class="hud-label">Bit Error Rate (BER)</div>
+<div class="hud-val" id="ber-gauge">0.00e+0</div>
+</div>
+</div>
+<!-- Two Main Canvases -->
+<div class="workspace-grid">
+<!-- Constellation Panel -->
+<div class="panel">
+<div class="panel-header">
+<span>I/Q Constellation Scope (VSA)</span>
+<div>
+<span class="badge badge-pass" id="pass-fail-badge">3GPP PASS</span>
+</div>
+</div>
+<div class="panel-body">
+<div class="canvas-container">
+<canvas height="420" id="constellation-canvas" width="450"></canvas>
+</div>
+<div id="compliance-text" style="margin-top: 10px; font-size: 11px; color: var(--text-muted);">
                             3GPP TS 38.104 Conformance Check
                         </div>
-                    </div>
-                </div>
-
-                <!-- 5G NR OFDM Resource Grid Panel -->
-                <div class="panel">
-                    <div class="panel-header">
-                        <span>5G NR OFDM Resource Grid</span>
-                        <span style="font-size: 11px; color: var(--text-muted);">14 Symbols × 24 Subcarriers</span>
-                    </div>
-                    <div class="panel-body">
-                        <div class="canvas-container">
-                            <canvas id="ofdm-canvas" width="450" height="260"></canvas>
-                        </div>
-                        <div id="ofdm-cell-details" style="margin-top: 10px; font-size: 11px; color: var(--text-muted); font-family: var(--font-mono);">
+</div>
+</div>
+<!-- 5G NR OFDM Resource Grid Panel -->
+<div class="panel">
+<div class="panel-header">
+<span>5G NR OFDM Resource Grid</span>
+<span style="font-size: 11px; color: var(--text-muted);">14 Symbols × 24 Subcarriers</span>
+</div>
+<div class="panel-body">
+<div class="canvas-container">
+<canvas height="260" id="ofdm-canvas" width="450"></canvas>
+</div>
+<div id="ofdm-cell-details" style="margin-top: 10px; font-size: 11px; color: var(--text-muted); font-family: var(--font-mono);">
                             Hover or click any Resource Element (RE) to inspect channel state.
                         </div>
+</div>
+</div>
+</div>
+<!-- Automated Conformance Testbench -->
+<div class="panel" style="margin-top: 16px;">
+<div class="panel-header">
+<span>Automated 3GPP TS 38.104 Conformance Testbench</span>
+<span style="font-size: 11px; color: var(--text-muted);">Monte Carlo BER vs. Eb/N0 Sweep</span>
+</div>
+<div class="panel-body">
+<div class="info-callout">
+<strong>Physical-Layer Modern Modem Challenge:</strong> Automated stress testing of physical-layer modems under Doppler, multipath fading, and phase noise. This testbench executes an automated sweep across 13 SNR points, compares empirical BER to theoretical AWGN bounds, and validates EVM against 3GPP conformance masks.
                     </div>
-                </div>
-            </div>
-
-            <!-- Automated Conformance Testbench -->
-            <div class="panel" style="margin-top: 16px;">
-                <div class="panel-header">
-                    <span>Automated 3GPP TS 38.104 Conformance Testbench</span>
-                    <span style="font-size: 11px; color: var(--text-muted);">Monte Carlo BER vs. Eb/N0 Sweep</span>
-                </div>
-                <div class="panel-body">
-                    <div class="info-callout">
-                        <strong>Physical-Layer Modern Modem Challenge:</strong> Automated stress testing of physical-layer modems under Doppler, multipath fading, and phase noise. This testbench executes an automated sweep across 13 SNR points, compares empirical BER to theoretical AWGN bounds, and validates EVM against 3GPP conformance masks.
-                    </div>
-                    <div class="canvas-container">
-                        <canvas id="ber-canvas" width="900" height="220"></canvas>
-                    </div>
-                    <div class="progress-bar-wrap" id="sweep-progress-container">
-                        <div class="progress-bar" id="sweep-progress-bar"></div>
-                    </div>
-                    <div class="testbench-actions">
-                        <button class="btn btn-primary" id="run-sweep-btn">▶ Run Automated 3GPP Conformance Sweep</button>
-                        <button class="btn" id="export-csv-btn" disabled>📥 Export VSA CSV Log</button>
-                        <button class="btn" id="export-json-btn" disabled>📥 Export JSON Dataset</button>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <!-- Application Script Entrypoint -->
-    <script type="module" src="js/app.js?v=2.3"></script>
-
-    <div class="guide-modal-footer">
-                <button id="guideStart" class="btn-guide-start">🚀 Start Interactive Simulator</button>
-            </div>
-        </div>
-    </div>
-
-    
+<div class="canvas-container">
+<canvas height="220" id="ber-canvas" width="900"></canvas>
+</div>
+<div class="progress-bar-wrap" id="sweep-progress-container">
+<div class="progress-bar" id="sweep-progress-bar"></div>
+</div>
+<div class="testbench-actions">
+<button class="btn btn-primary" id="run-sweep-btn">▶ Run Automated 3GPP Conformance Sweep</button>
+<button class="btn" disabled="" id="export-csv-btn">📥 Export VSA CSV Log</button>
+<button class="btn" disabled="" id="export-json-btn">📥 Export JSON Dataset</button>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Application Script Entrypoint -->
+<script src="js/app.js?v=2.3" type="module"></script>
+<div class="guide-modal-footer">
+<button class="btn-guide-start" id="guideStart">🚀 Start Interactive Simulator</button>
+</div>
 
 
-
-    
-
-
-    
-
-    <script>
+<script>
     (function() {
         const steps = [
     {
@@ -434,11 +410,7 @@
         }
     })();
     </script>
-
-
-    
-
-    <script>
+<script>
     (function() {
         const steps = [
     {
@@ -647,29 +619,26 @@
         }
     })();
     </script>
-
 <!-- Interactive Guided Yellow Spotlight Tour Engine (Zero Blur) -->
-    <div class="tour-card" id="tourCard">
-        <div class="tour-badge-row">
-            <span class="tour-step-badge" id="tourStepBadge">Step 1 of 4</span>
-            <button class="tour-btn-skip" id="tourBtnSkip">✕ Skip Tour</button>
-        </div>
-        <h4 class="tour-action-title" id="tourTitle">Action Title</h4>
-        <div class="tour-happens-box" id="tourHappens"><strong>⚡ What Happens:</strong> Live reaction</div>
-        <div class="tour-why-box" id="tourWhy"><strong>💡 Why:</strong> Reason</div>
-        <div class="tour-footer">
-            <div class="tour-dots" id="tourDots"></div>
-            <div class="tour-controls">
-                <button class="btn-tour-nav btn-tour-prev" id="tourBtnPrev">⇦ Back</button>
-                <button class="btn-tour-nav btn-tour-next" id="tourBtnNext">Next ➔</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Floating Tour Launcher Pill -->
-    <button class="btn-tour-launcher" id="btnTourLauncher">🎮 Guided Tour</button>
-
-    <script>
+<div class="tour-card" id="tourCard">
+<div class="tour-badge-row">
+<span class="tour-step-badge" id="tourStepBadge">Step 1 of 4</span>
+<button class="tour-btn-skip" id="tourBtnSkip">✕ Skip Tour</button>
+</div>
+<h4 class="tour-action-title" id="tourTitle">Action Title</h4>
+<div class="tour-happens-box" id="tourHappens"><strong>⚡ What Happens:</strong> Live reaction</div>
+<div class="tour-why-box" id="tourWhy"><strong>💡 Why:</strong> Reason</div>
+<div class="tour-footer">
+<div class="tour-dots" id="tourDots"></div>
+<div class="tour-controls">
+<button class="btn-tour-nav btn-tour-prev" id="tourBtnPrev">⇦ Back</button>
+<button class="btn-tour-nav btn-tour-next" id="tourBtnNext">Next ➔</button>
+</div>
+</div>
+</div>
+<!-- Floating Tour Launcher Pill -->
+<button class="btn-tour-launcher" id="btnTourLauncher">🎮 Guided Tour</button>
+<script>
     (function() {
         const steps = [
     {
