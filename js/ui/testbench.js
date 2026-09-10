@@ -220,7 +220,7 @@ export class ConformanceTestbench {
 
     exportJSON(modType, activeParams) {
         const dataset = {
-            instrument: 'Keysight KS-6G9000 VSA Digital Channel Emulator',
+            instrument: 'High-Precision 5G/6G VSA Digital Channel Emulator',
             standard: '3GPP TS 38.104 Conformance Verification',
             timestamp: new Date().toISOString(),
             modulation: modType,

@@ -1,6 +1,6 @@
 /**
  * 5G/6G RF Channel & Constellation Studio
- * 5G NR OFDM Resource Grid Interactive Visualizer (Keysight VSA Style)
+ * 5G NR OFDM Resource Grid Interactive Visualizer (Precision VSA Style)
  * Frame Structure: 14 OFDM Symbols (Time) x 12 Subcarriers per PRB (Freq) = 2 PRBs (24 subcarriers)
  * Fully responsive on mobile with clean margins, zero text collisions, and Retina rendering.
  */

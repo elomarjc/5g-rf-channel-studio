@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>5G/6G RF Channel & Constellation Studio | Keysight PathWave VSA</title>
+    <title>5G/6G RF Physical-Layer Channel & Constellation Studio</title>
     <link rel="stylesheet" href="css/instrument.css?v=2.3">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,7 +16,7 @@
             <span class="brand-icon">📡</span>
             <div>
                 <div class="brand-title">5G/6G RF Channel & Constellation Studio</div>
-                <div class="brand-model">Keysight KS-6G9000 VSA • Physical-Layer Emulation Suite</div>
+                <div class="brand-model">Precision Vector Signal Analyzer (VSA) • Physical-Layer Emulation Suite</div>
             </div>
         </div>
         <div class="nav-links">
@@ -200,12 +200,12 @@
             <!-- Automated Conformance Testbench -->
             <div class="panel" style="margin-top: 16px;">
                 <div class="panel-header">
-                    <span>Keysight Automated 3GPP TS 38.104 Testbench</span>
+                    <span>Automated 3GPP TS 38.104 Conformance Testbench</span>
                     <span style="font-size: 11px; color: var(--text-muted);">Monte Carlo BER vs. Eb/N0 Sweep</span>
                 </div>
                 <div class="panel-body">
                     <div class="info-callout">
-                        <strong>Keysight Technologies Aalborg R&D Challenge:</strong> Automated stress testing of physical-layer modems under Doppler, multipath fading, and phase noise. This testbench executes an automated sweep across 13 SNR points, compares empirical BER to theoretical AWGN bounds, and validates EVM against 3GPP conformance masks.
+                        <strong>Physical-Layer Modern Modem Challenge:</strong> Automated stress testing of physical-layer modems under Doppler, multipath fading, and phase noise. This testbench executes an automated sweep across 13 SNR points, compares empirical BER to theoretical AWGN bounds, and validates EVM against 3GPP conformance masks.
                     </div>
                     <div class="canvas-container">
                         <canvas id="ber-canvas" width="900" height="220"></canvas>
@@ -215,7 +215,7 @@
                     </div>
                     <div class="testbench-actions">
                         <button class="btn btn-primary" id="run-sweep-btn">▶ Run Automated 3GPP Conformance Sweep</button>
-                        <button class="btn" id="export-csv-btn" disabled>📥 Export Keysight CSV Log</button>
+                        <button class="btn" id="export-csv-btn" disabled>📥 Export VSA CSV Log</button>
                         <button class="btn" id="export-json-btn" disabled>📥 Export JSON Dataset</button>
                     </div>
                 </div>
@@ -225,5 +225,91 @@
 
     <!-- Application Script Entrypoint -->
     <script type="module" src="js/app.js?v=2.3"></script>
+
+    <!-- Interactive Guide & Problem Overview Modal -->
+    <div id="guideModal" class="guide-modal-overlay">
+        <div class="guide-modal-card">
+            <div class="guide-modal-header">
+                <h2>📡 5G/6G RF Physical-Layer Channel & Constellation Studio</h2>
+                <button id="guideClose" class="guide-modal-close" aria-label="Close modal">&times;</button>
+            </div>
+            <div class="guide-modal-body">
+                <div class="guide-section">
+                    <h3>🎯 The Industrial Problem Solved</h3>
+                    <p>Designing next-generation 5G NR and 6G radios requires transceivers to maintain high modulation purity (EVM &lt; 3.5% for 256-QAM) while operating through hostile wireless environments: high Doppler shifts (from high-speed trains at 300+ km/h), multi-path Rayleigh/Rician fading from buildings, local oscillator phase noise, and mixer I/Q imbalances. Hardware RF testing without million-dollar anechoic chamber testbeds is expensive and slow.</p>
+                </div>
+
+                <div class="guide-section">
+                    <h3>💡 How This Digital Twin Solves It</h3>
+                    <p>This digital twin emulates a full 3GPP TS 38.104 physical-layer testbench directly in software: baseband I/Q modulation (BPSK to 256-QAM), 5G NR 14-symbol &times; 24-subcarrier OFDM resource grids, Clarke/Jakes Doppler spectrums, and real-time Monte Carlo Bit Error Rate (BER) sweeps benchmarked against closed-form theoretical AWGN error curves.</p>
+                </div>
+
+                <div class="guide-section">
+                    <h3>🕹️ Interactive Quickstart Tutorial (Try This Now!)</h3>
+                    <ul class="guide-step-list">
+                    <li class="guide-step-item">
+                        <span class="guide-step-num">1</span>
+                        <div class="guide-step-content">
+                            <strong>Select Modulation Scheme:</strong> Choose 16-QAM, 64-QAM, or 256-QAM from the dropdown to watch the constellation grid adapt on the phosphor scope.
+                        </div>
+                    </li>
+                    <li class="guide-step-item">
+                        <span class="guide-step-num">2</span>
+                        <div class="guide-step-content">
+                            <strong>Inject Real-World Impairments:</strong> Drag the AWGN SNR slider down to 15 dB, check Multipath Fading, or increase Doppler Shift to 300 km/h: watch the constellation points scatter and EVM climb toward 3GPP conformance limits.
+                        </div>
+                    </li>
+                    <li class="guide-step-item">
+                        <span class="guide-step-num">3</span>
+                        <div class="guide-step-content">
+                            <strong>Inspect the 5G NR Resource Grid:</strong> Hover over or click any Resource Element (RE) on the 14-symbol &times; 24-subcarrier OFDM grid on the right to inspect channel power, pilot symbols, and modulation data.
+                        </div>
+                    </li>
+                    </ul>
+                </div>
+
+                <div class="guide-section">
+                    <h3>📊 Telemetry & Control Glossary</h3>
+                    <ul style="padding-left: 20px; display: flex; flex-direction: column; gap: 6px; font-size: 0.85rem;">
+                        <li><strong>EVM (Error Vector Magnitude):</strong> Measures modulation accuracy between ideal and measured I/Q constellation symbols; 3GPP specifies &lt;3.5% for 256-QAM and &lt;8% for 64-QAM.</li><li><strong>Phosphor Persistence Scope:</strong> Simulates CRT analog phosphor decay to visualize transient phase noise and multi-path inter-symbol interference in real time.</li><li><strong>OFDM Resource Grid:</strong> Maps 14 time symbols across 24 frequency subcarriers representing 5G NR Physical Resource Blocks (PRBs).</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="guide-modal-footer">
+                <button id="guideStart" class="btn-guide-start">🚀 Start Interactive Simulator</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Toggle Script -->
+    <script>
+        (function() {
+            const guideBtn = document.getElementById('guideBtn');
+            const guideModal = document.getElementById('guideModal');
+            const guideClose = document.getElementById('guideClose');
+            const guideStart = document.getElementById('guideStart');
+
+            function openModal() { if (guideModal) guideModal.classList.add('active'); }
+            function closeModal() { if (guideModal) guideModal.classList.remove('active'); }
+
+            if (guideBtn) guideBtn.addEventListener('click', openModal);
+            if (guideClose) guideClose.addEventListener('click', closeModal);
+            if (guideStart) guideStart.addEventListener('click', closeModal);
+            if (window.location.search.indexOf('guide') !== -1) openModal();
+
+            if (guideModal) {
+                guideModal.addEventListener('click', function(e) {
+                    if (e.target === guideModal) closeModal();
+                });
+            }
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && guideModal && guideModal.classList.contains('active')) {
+                    closeModal();
+                }
+            });
+        })();
+    </script>
+
 </body>
 </html>

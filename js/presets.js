@@ -1,7 +1,7 @@
 /**
  * 5G/6G RF Channel & Constellation Studio
  * Industry Test Scenarios & Conformance Presets
- * Directly addressing Keysight Technologies R&D testing challenges
+ * Inspired by physical-layer RF testbench R&D testing challenges
  */
 
 import { MODULATION_TYPES } from './dsp/modulator.js';
